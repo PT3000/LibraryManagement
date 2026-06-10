@@ -98,6 +98,22 @@ class LibraryRepositoryTest {
         // 3. 권한(Type)도 맞는지 확인해보면 좋습니다.
         assertEquals("ADMIN", user.getRole(), "사용자 권한이 'ADMIN'이어야 합니다.");
     }
+
+    @Test
+    @DisplayName("SQL Injection 공격이 PreparedStatement로 차단되는지 확인")
+    void loadUserSqlInjectionBlocked() {
+        // Given: 비밀번호를 몰라도 항상 참이 되도록 만드는 SQL Injection 페이로드
+        String attackId = "' or 1 = 1 -- '";
+        String attackPw = "afasdfasd";
+
+        // When: Repository의 로그인 조회 메서드에 공격 값을 전달
+        User user = repository.loadUser(attackId, attackPw);
+
+        // Then: 입력값이 SQL 문법이 아닌 문자열 값으로 처리되어 인증되지 않아야 한다.
+        assertNull(user, "SQL Injection 페이로드로 인증이 우회되면 안 됩니다.");
+        System.out.println("[성공] SQL Injection 공격이 PreparedStatement에 의해 차단되었습니다.");
+    }
+
     @Test
     @DisplayName("DB 도서 개별 삭제 테스트 및 물리 쿼리 검증 (deleteBook)")
     void deleteBook() {
