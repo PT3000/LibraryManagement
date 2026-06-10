@@ -1,3 +1,4 @@
+import java.io.Console;
 import java.util.*;
 
 /**
@@ -56,12 +57,25 @@ public class LibraryMain {
                 continue;
             }
 
-            System.out.print("비밀번호: ");
-            String pw = sc.nextLine();
+            String pw = readPassword();
 
             if (manager.login(id, pw)) return true;
             System.out.println("[오류] 아이디 또는 비밀번호가 틀렸습니다.");
         }
+    }
+
+    private static String readPassword() {
+        Console console = System.console();
+
+        if (console != null) {
+            char[] password = console.readPassword("비밀번호: ");
+            return new String(password);
+        }
+
+        System.out.println("[주의] 현재 실행 환경은 비밀번호 숨김 입력을 지원하지 않습니다.");
+        System.out.println("[안내] 입력값을 숨기려면 CMD 또는 PowerShell에서 실행하세요.");
+        System.out.print("비밀번호: ");
+        return sc.nextLine();
     }
 
     /**
